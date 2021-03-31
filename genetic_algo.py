@@ -5,10 +5,22 @@ h1_max = 2 # 2m
 h2_max = 2 # 2m
 h1_min = 0.06 # 6cm
 h2_min = 0.06 # 6cm
+
 d1_max = 2 # 2m
 d2_max = 2 # 2m
 d1_min = 0.1 # 10cm
 d2_min = 0.1 # 10cm
+
+d1a_max = 2 # 2m
+d2a_max = 2 # 2m
+d1a_min = 0.1 # 10cm
+d2a_min = 0.1 # 10cm
+
+d1b_max = 2 # 2m
+d2b_max = 2 # 2m
+d1b_min = 0.1 # 10cm
+d2b_min = 0.1 # 10cm
+
 N_max = 10
 N_min = 1
 
@@ -39,8 +51,10 @@ def print_brug(brug):
     print("======= Info Brug ========")
     print(f"h1:\t{brug.h1}")
     print(f"h2:\t{brug.h2}")
-    print(f"d1:\t{brug.d1}")
-    print(f"d2:\t{brug.d2}")
+    print(f"d1a:\t{brug.d1a}")
+    print(f"d2a:\t{brug.d2a}")
+    print(f"d1b:\t{brug.d1b}")
+    print(f"d2b:\t{brug.d2b}")
     print(f"N:\t{brug.N}")
     
     print("Krachten in touwen A")
@@ -80,13 +94,15 @@ def clamp(x, mini, maxi):
 
 def _genRandomBrugVars():
     from random import random, randint
-    return (
-        h1_min + random()*(h1_max - h1_min),
-        h2_min + random()*(h2_max - h2_min),
-        d1_min + random()*(d1_max - d1_min),
-        d2_min + random()*(d2_max - d2_min),
-        randint(N_min, N_max),
-    )
+    h1 = h1_min + random()*(h1_max - h1_min)
+    h2 = h2_min + random()*(h2_max - h2_min)
+    d1a = d1a_min + random()*(d1a_max - d1a_min)
+    d2a = d2a_min + random()*(d2a_max - d2a_min)
+    d1b = d1b_min + random()*(d1b_max - d1b_min)
+    d2b = d2b_min + random()*(d2b_max - d2b_min)
+    N = randint(N_min, N_max)
+
+    return (h1, h2, max(d1a, d1b+0.1), max(d2a, d2b+0.1), d1b, d2b, N)
 
 def genRandomBrugA():
     from berekeningen_andreas import Brug
@@ -95,19 +111,15 @@ def genRandomBrugA():
 
 def _genParentVars(p1, p2):
     import random
-    h1 = (p1.h1 if random.choice([True, False]) else p2.h1) + random.gauss(0,1)
-    h2 = (p1.h2 if random.choice([True, False]) else p2.h2) + random.gauss(0,1)
-    d1 = (p1.d1 if random.choice([True, False]) else p2.d1) + random.gauss(0,1)
-    d2 = (p1.d2 if random.choice([True, False]) else p2.d2) + random.gauss(0,1)
-    N = (p1.N if random.choice([True, False]) else p2.N) + int(random.gauss(0,N_max/2))
+    h1  = clamp((p1.h1 if random.choice([True, False]) else p2.h1) + random.gauss(0,1), h1_min, h1_max)
+    h2  = clamp((p1.h2 if random.choice([True, False]) else p2.h2) + random.gauss(0,1), h2_min, h2_max)
+    d1a = clamp((p1.d1a if random.choice([True, False]) else p2.d1a) + random.gauss(0,1), d1a_min, d1a_max)
+    d2a = clamp((p1.d2a if random.choice([True, False]) else p2.d2a) + random.gauss(0,1), d2a_min, d2a_max)
+    d1b = clamp((p1.d1b if random.choice([True, False]) else p2.d1b) + random.gauss(0,1), d1b_min, d1b_max)
+    d2b = clamp((p1.d2b if random.choice([True, False]) else p2.d2b) + random.gauss(0,1), d2b_min, d2b_max)
+    N   = clamp((p1.N if random.choice([True, False]) else p2.N) + int(random.gauss(0,N_max/2)), N_min, N_max)
 
-    return (
-        clamp(h1, h1_min, h1_max),
-        clamp(h2, h2_min, h2_max),
-        clamp(d1, d1_min, d1_max),
-        clamp(d2, d2_min, d2_max),
-        clamp(N, N_min, N_max)
-    )
+    return (h1, h2, max(d1a, d1b+0.1), max(d2a, d2b+0.1), d1b, d2b, N)
 
 def genFromParentsA(p1, p2):
     from berekeningen_andreas import Brug

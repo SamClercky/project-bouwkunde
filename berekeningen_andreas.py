@@ -2,14 +2,17 @@ import math
 import numpy as np
 
 from brug import BrugInterface
+import constanten as C
 
 class Brug(BrugInterface):
 
-    def __init__(self, h1, h2, d1, d2, N):
+    def __init__(self, h1, h2, d1a, d2a, d1b, d2b, N):
         self.h1 = h1
         self.h2 = h2
-        self.d1 = d1
-        self.d2 = d2
+        self.d1a = d1a
+        self.d2a = d2a
+        self.d1b = d1b
+        self.d2b = d2b
         self.N = N
 
         self.update_data()
@@ -18,14 +21,19 @@ class Brug(BrugInterface):
         """
         Bereken automatisch alpha en beta in de constructie
         """
-        self.cosa = 2.0/(self.N+1)/math.sqrt(
-                (self.h1/self.N)**2 + (2.0/(self.N+1))**2)
-        self.sina = (self.h1/self.N)/math.sqrt(
-                (self.h1/self.N)**2 + (2.0/(self.N+1))**2)
-        self.cosb = 2.0/(self.N+1)/math.sqrt(
-                (self.h2/self.N)**2 + (2.0/(self.N+1))**2)
-        self.sinb = (self.h2/self.N)/math.sqrt(
-                (self.h2/self.N)**2 + (2.0/(self.N+1))**2)
+
+        breette_a = 2.0/(self.N+1) + self.d1b
+        hoogte_a = self.h1/self.N
+        hypoth_a = math.sqrt(breette_a**2 + hoogte_a**2)
+
+        breette_b = 2.0/(self.N+1) + self.d2b
+        hoogte_b = self.h2/self.N
+        hypoth_b = math.sqrt(breette_b**2 + hoogte_b**2)
+
+        self.cosa = breette_a/hypoth_a
+        self.sina = hoogte_a/hypoth_a
+        self.cosb = breette_b/hypoth_b
+        self.sinb = hoogte_b/hypoth_b
 
     def calc_reactie_krachten(self):
         # Opstellen van matrix
@@ -37,12 +45,12 @@ class Brug(BrugInterface):
         B = []
         for i in range(self.N+1):
             A.append([*[0]*i*2, 1, 1, *[0]*(self.N-i)*2])
-            B.append(800*deeltje + ( 400 if 2/3 < deeltje*(i+1) and 2/3 > deeltje*i else 0 ))
+            B.append((C.EIG_GEWICHT_BRUG+C.VERDEELDE_BELASTING)*deeltje + ( C.PUNT_BELASTING if 2/3 < deeltje*(i+1) and 2/3 > deeltje*i else 0 ))
 
         # Invoeren van momenten
         for i in range(self.N+1):
             A.append([*[0]*i*2, 0, deeltje, *[0]*(self.N-i)*2])
-            B.append(800*deeltje**2/2 + ( 400*(2/3-deeltje*i) if 2/3 < deeltje*(i+1) and 2/3 > deeltje*i else 0 ))
+            B.append((C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*deeltje**2/2 + ( C.PUNT_BELASTING*(2/3-deeltje*i) if 2/3 < deeltje*(i+1) and 2/3 > deeltje*i else 0 ))
 
         solv = np.linalg.solve(A, B)
         self.Va = solv[0]
@@ -75,7 +83,7 @@ class Brug(BrugInterface):
 
         # Deel C
         FiC, cosgam, singam = list(zip(*[calc_i(
-            i, self.h1, self.d1, self.FiA, self.cosa) for i in range(len(self.FiA))]))
+            i, self.h1, self.d1a-self.d1b, self.FiA, self.cosa) for i in range(self.N)]))
         self.FiC = FiC
         self.cosgam = cosgam
         self.singam = singam
@@ -87,7 +95,7 @@ class Brug(BrugInterface):
 
         # Deel D
         FiD, cosxi, sinxi = list(zip(*[calc_i(
-            i, self.h2, self.d2, self.FiB, self.cosb) for i in range(len(self.FiA))]))
+            i, self.h2, self.d2a-self.d2b, self.FiB, self.cosb) for i in range(self.N)]))
         self.FiD = FiD
         FiD = np.array(self.FiD)
         self.cosxi = cosxi
@@ -103,9 +111,9 @@ class Brug(BrugInterface):
         deeltje = 2/(self.N+1)
         i = min(int(x // deeltje), len(self.Fi)) # integer deling
         N = 0
-        D = self.Va + sum(Fi for Fi in self.Fi[0:i]) - 800*x - (400 if x > 2/3 else 0)
+        D = self.Va + sum(Fi for Fi in self.Fi[0:i]) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x - (C.PUNT_BELASTING if x > 2/3 else 0)
         # M = self.Va*x + sum(self.Fi[ii]*(x-deeltje*ii) for ii in range(i)) - 800*x**2/2 - (400*(x-2/3) if x > 2/3 else 0)
-        M = self.Va*x + sum(self.Fi[ii]*(x-deeltje*ii) for ii in range(len(self.Fi))) - self.Vb*(2-x) - 400*(x-2/3) - 800*x**2/2
+        M = self.Va*x + sum(self.Fi[ii]*(x-deeltje*ii) for ii in range(len(self.Fi))) - self.Vb*(2-x) - C.PUNT_BELASTING*(x-2/3) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x**2/2
         
         return N, D, M
 
