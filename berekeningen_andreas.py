@@ -1,7 +1,9 @@
 import math
 import numpy as np
 
-class Brug:
+from brug import BrugInterface
+
+class Brug(BrugInterface):
 
     def __init__(self, h1, h2, d1, d2, N):
         self.h1 = h1
