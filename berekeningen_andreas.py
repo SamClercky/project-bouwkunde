@@ -113,7 +113,6 @@ class Brug(BrugInterface):
         N = 0
         D = self.Va + sum(self.Fi[0:i]) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x - (C.PUNT_BELASTING if x > 2/3 else 0)
         M = self.Va*x + sum(self.Fi[ii]*(x-deeltje*(ii+1)) for ii in range(i)) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x**2/2 - (C.PUNT_BELASTING*(x-2/3) if x > 2/3 else 0)
-        # M = self.Va*x + sum(self.Fi[ii]*(x-deeltje*ii) for ii in range(len(self.Fi))) - self.Vb*(2-x) - C.PUNT_BELASTING*(x-2/3) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x**2/2
         
         return N, D, M
 

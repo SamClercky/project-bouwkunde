@@ -102,14 +102,6 @@ class Brug(BrugInterface):
         i = min(int(x // deeltje), len(self.Vi)-1) # integer deling
         N = 0
         D = sum(self.Vi[0:i+1]) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x - (C.PUNT_BELASTING if x > 2/3 else 0)
-        # M = self.Va*x + sum(self.Fi[ii]*(x-deeltje*ii) for ii in range(i)) - 800*x**2/2 - (400*(x-2/3) if x > 2/3 else 0)
-        #M = self.Va*x + sum(self.Fi[ii]*(x-deeltje*ii) for ii in range(len(self.Fi))) - self.Vb*(2-x) - 400*(x-2/3) - 800*x**2/2
-        # M = 0
-        # for j in range(i):
-        #     M += deeltje*self.Vi[j] - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*deeltje**2/2
-        #     M += C.PUNT_BELASTING*(2/3 - deeltje*j) if deeltje*j < 2/3 and 2/3 < deeltje*(j+1) else 0
-        # M += (x%deeltje)*self.Vi[i] - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*(x%deeltje)**2/2
-        # M += C.PUNT_BELASTING*(2/3 - x) if deeltje*i < 2/3 and 2/3 < x else 0
         M = sum(self.Vi[ii]*(x-deeltje*(ii)) for ii in range(i+1)) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x**2/2 - (C.PUNT_BELASTING*(x-2/3) if x > 2/3 else 0)
         
         return N, D, M
@@ -130,9 +122,5 @@ class Brug(BrugInterface):
         N = np.sum(FiA[:i]*sina + FiC[:i]*singam[:i]) - (Va + np.sum(FiA*sina + FiC*singam))
         D = np.sum(FiA[:i]*cosa - FiC[:i]*cosgam[:i])
         M = np.sum(FiA[:i]*cosa - FiC[:i]*cosgam[:i])*sum(x-h/self.N*ii for ii in range(i))
-        #M = 0
-        #for j in range(i):
-        #    M += h/self.N*(FiA[j]*cosa - FiC[j]*cosgam[j])
-        #M += (x%(h/self.N))*(FiA[i]*cosa - FiC[i]*cosgam[i])
 
         return N, D, M
