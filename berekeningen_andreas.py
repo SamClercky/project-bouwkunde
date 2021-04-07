@@ -63,7 +63,7 @@ class Brug(BrugInterface):
         try:
             solv = [
                     np.linalg.solve([
-                        [self.cosa, self.cosb],
+                        [self.cosa, -self.cosb],
                         [self.sina, self.sinb],
                     ], [0, Fi]) for Fi in self.Fi]
         except np.linalg.LinAlgError:

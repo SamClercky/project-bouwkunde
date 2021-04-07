@@ -58,8 +58,8 @@ class Brug(BrugInterface):
         sinphi = math.sqrt(1-self.sinb**2)
         sinab  = self.sina*self.cosb + self.cosa*self.sinb
 
-        self.FiA = [self.Vi[i] * sinab/sinphi for i in range(1, len(self.Vi)-1)]
-        self.FiB = [self.Vi[i] * sinab/singam for i in range(1, len(self.Vi)-1)]
+        self.FiA = [self.Vi[i] * sinphi/sinab for i in range(1, len(self.Vi)-1)]
+        self.FiB = [self.Vi[i] * singam/sinab for i in range(1, len(self.Vi)-1)]
 
         return self.FiA, self.FiB
 
