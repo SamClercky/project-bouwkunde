@@ -43,7 +43,7 @@ class Brug(BrugInterface):
             Va = (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*deeltje/2
             Vb = (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*deeltje/2
 
-            if deeltje*i < 2/3 and 2/3 < deeltje*(i+1):
+            if deeltje*i <= 2/3 and 2/3 < deeltje*(i+1):
                 Va += C.PUNT_BELASTING*(deeltje*(i+1) - 2/3)/deeltje
                 Vb += C.PUNT_BELASTING*(2/3 - deeltje*i)/deeltje
             V.append(Va)
@@ -101,8 +101,8 @@ class Brug(BrugInterface):
         deeltje = 2/(self.N+1)
         i = min(int(x // deeltje), len(self.Vi)-1) # integer deling
         N = 0
-        D = sum(self.Vi[0:i+1]) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x - (C.PUNT_BELASTING if x > 2/3 else 0)
-        M = sum(self.Vi[ii]*(x-deeltje*(ii)) for ii in range(i+1)) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x**2/2 - (C.PUNT_BELASTING*(x-2/3) if x > 2/3 else 0)
+        D = sum(self.Vi[0:i+1]) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x - (C.PUNT_BELASTING if x >= 2/3 else 0)
+        M = sum(self.Vi[ii]*(x-deeltje*(ii)) for ii in range(i+1)) - (C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*x**2/2 - (C.PUNT_BELASTING*(x-2/3) if x >= 2/3 else 0)
         
         return N, D, M
 

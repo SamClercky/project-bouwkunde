@@ -45,12 +45,12 @@ class Brug(BrugInterface):
         B = []
         for i in range(self.N+1):
             A.append([*[0]*i*2, 1, 1, *[0]*(self.N-i)*2])
-            B.append((C.EIG_GEWICHT_BRUG+C.VERDEELDE_BELASTING)*deeltje + ( C.PUNT_BELASTING if 2/3 < deeltje*(i+1) and 2/3 > deeltje*i else 0 ))
+            B.append((C.EIG_GEWICHT_BRUG+C.VERDEELDE_BELASTING)*deeltje + ( C.PUNT_BELASTING if 2/3 <= deeltje*(i+1) and 2/3 > deeltje*i else 0 ))
 
         # Invoeren van momenten
         for i in range(self.N+1):
             A.append([*[0]*i*2, 0, deeltje, *[0]*(self.N-i)*2])
-            B.append((C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*deeltje**2/2 + ( C.PUNT_BELASTING*(2/3-deeltje*i) if 2/3 < deeltje*(i+1) and 2/3 > deeltje*i else 0 ))
+            B.append((C.VERDEELDE_BELASTING+C.EIG_GEWICHT_BRUG)*deeltje**2/2 + ( C.PUNT_BELASTING*(2/3-deeltje*i) if 2/3 <= deeltje*(i+1) and 2/3 > deeltje*i else 0 ))
 
         solv = np.linalg.solve(A, B)
         self.Va = solv[0]
@@ -63,7 +63,7 @@ class Brug(BrugInterface):
         try:
             solv = [
                     np.linalg.solve([
-                        [self.cosa, -self.cosb],
+                        [self.cosa, -self.cosb], # let op de min!
                         [self.sina, self.sinb],
                     ], [0, Fi]) for Fi in self.Fi]
         except np.linalg.LinAlgError:
@@ -134,21 +134,3 @@ class Brug(BrugInterface):
         M = np.sum(FiA[:i]*cosa - FiC[:i]*cosgam[:i])*sum(x-h/self.N*ii for ii in range(i))
 
         return N, D, M
-
-    def calc_fitness(self):
-        """
-        Optimaliseren voor zo min mogelijk krachten in pilonen en wegdek (duur tov van kabels)
-        Functie roept zelf benodigde methoden aan
-        """
-        self.update_data()
-        self.calc_reactie_krachten()
-        self.calc_touw_kracht()
-        self.calc_kant()
-        wdN, wdD, wdM = list(zip(*[self.calc_intern_wegdek(x) for x in np.arange(0, 2, 0.1)])) # wd = wegdek
-        b1N, b1D, b1M = list(zip(*[self.calc_intern_balk(x, True) for x in np.arange(0, self.h1, 0.01)]))
-        b2N, b2D, b2M = list(zip(*[self.calc_intern_balk(x, False) for x in np.arange(0, self.h2, 0.01)]))
-        wdN, wdD, wdM = max(np.abs(wdN)), max(np.abs(wdD)), max(np.abs(wdM))
-        b1N, b1D, b1M = max(np.abs(b1N)), max(np.abs(b1D)), max(np.abs(b1M))
-        b2N, b2D, b2M = max(np.abs(b2N)), max(np.abs(b2D)), max(np.abs(b2M))
-
-        return wdD*1 + b1N*2 + b2N*2
