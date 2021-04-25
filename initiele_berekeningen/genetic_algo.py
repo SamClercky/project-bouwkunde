@@ -36,7 +36,10 @@ def print_brug(brug):
     N1, _, _ = list(zip(*[brug.calc_intern_balk(xi, True) for xi in x]))
     N2, _, _ = list(zip(*[brug.calc_intern_balk(xi, False) for xi in x]))
     _, D, _ = list(zip(*[brug.calc_intern_wegdek(xi) for xi in x]))
-    
+    I1a, I1b = list(zip(*[brug.calc_piloon_I(x, True) for x in np.arange(0, brug.h1, 0.01)]))
+    I2a, I2b = list(zip(*[brug.calc_piloon_I(x, False) for x in np.arange(0, brug.h2, 0.01)]))
+    doorbuiging = [brug.calc_doorbuiging_wegdek(x) for x in np.arange(0, 2.0, 0.01)]
+
     fig = plt.figure()
     ax1 = plt.subplot(3, 1, 1)
     ax1.plot(x, N1)
@@ -56,7 +59,7 @@ def print_brug(brug):
     print(f"d1b:\t{brug.d1b}")
     print(f"d2b:\t{brug.d2b}")
     print(f"N:\t{brug.N}")
-    
+
     print("Krachten in touwen A")
     for F in brug.FiA:
         print(f"\t{F}")
@@ -73,7 +76,16 @@ def print_brug(brug):
     print(f"\tN1: {np.max(np.abs(N1))}")
     print(f"\tN2: {np.max(np.abs(N2))}")
     print(f"\tD: {np.max(np.abs(D))}")
-    
+
+    print("Maximale I:")
+    print(f"\tI1a: {np.max(np.abs(I1a))}")
+    print(f"\tI1b: {np.max(np.abs(I1b))}")
+    print(f"\tI2a: {np.max(np.abs(I2a))}")
+    print(f"\tI2b: {np.max(np.abs(I2b))}")
+
+    print("Maximale doorbuiging:")
+    print(f"\t{np.max(np.abs(doorbuiging))}")
+
     return fig
 
 def kill_population(population):
@@ -109,6 +121,11 @@ def genRandomBrugA():
 
     return Brug(*_genRandomBrugVars())
 
+def genRandomBrugB():
+    from berekeningen_ramses import Brug
+
+    return Brug(*_genRandomBrugVars())
+
 def _genParentVars(p1, p2):
     import random
     h1  = clamp((p1.h1 if random.choice([True, False]) else p2.h1) + random.gauss(0,1), h1_min, h1_max)
@@ -126,4 +143,8 @@ def genFromParentsA(p1, p2):
 
     return Brug(*_genParentVars(p1, p2))
 
+def genFromParentsB(p1, p2):
+    from berekeningen_ramses import Brug
+
+    return Brug(*_genParentVars(p1, p2))
     

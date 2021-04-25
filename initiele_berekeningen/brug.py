@@ -43,36 +43,37 @@ class BrugInterface:
         I = C.I_WEGDEK
 
         return (5*Q*deeltje**4)/(384*E*I) + (5*P*deeltje**3)/(48*E*I)
-    
+
     def calc_piloon_I(self, x: float, balk1: bool):
+        """
+        Berekenen van 2 verschillende Is: 
+        1) op basis van richting tuien
+        2) op basis van richting loodrecht op tuien
+        @returns I1, I2
+        """
         N, _, _ = self.calc_intern_balk(x, balk1)
         Cte = 1/4
         E = C.E_MODULUS
         h = self.h1 if balk1 else self.h2
         deeltje = h/self.N
         #L = deeltje*(x//deeltje + 1)
-        L = deeltje
+        L1 = deeltje
+        L2 = deeltje*(x//deeltje + 1) # Hoogte van deel
 
-        I = abs(N)*L**2/(Cte*math.pi**2*E)
+        I1 = abs(N)*L1**2/(Cte*math.pi**2*E)
+        I2 = abs(N)*L2**2/(Cte*math.pi**2*E)
 
-        return I
+        return I1, I2
     
     def calc_piloon_balk(self, x: float, balk1: bool):
         """
         Berekenen van balk met stukjes van 0.006m x 0.0318m
         """
-        h_step = 0.006
-        b_step = 0.034
-        h = h_step
-        b = b_step
+        I1, I2 = self.calc_piloon_I(x, balk1)
 
-        I = lambda h, b: b*h**3/12
-        Pr = self.calc_piloon_I(x, balk1)
+        b = (I2**3/I1 * 11**2)**(1/8)
+        h = (I1**3/I1 * 12**2)**(1/8)
 
-        while I(h, b) < Pr:
-            h += h_step
-            b += b_step
-        
         return h, b
 
     def calc_fitness(self):
@@ -88,11 +89,18 @@ class BrugInterface:
         b1N, b1D, b1M = list(zip(*[self.calc_intern_balk(x, True) for x in np.arange(0, self.h1, 0.01)]))
         b2N, b2D, b2M = list(zip(*[self.calc_intern_balk(x, False) for x in np.arange(0, self.h2, 0.01)]))
         doorbuiging = [self.calc_doorbuiging_wegdek(x) for x in np.arange(0, 2.0, 0.01)]
-        I1 = [self.calc_piloon_I(x, True) for x in np.arange(0, self.h1, 0.01)]
-        I1 = [self.calc_piloon_I(x, False) for x in np.arange(0, self.h2, 0.01)]
+        I1a, I1b = list(zip(*[self.calc_piloon_I(x, True) for x in np.arange(0, self.h1, 0.01)]))
+        I2a, I2b = list(zip(*[self.calc_piloon_I(x, False) for x in np.arange(0, self.h2, 0.01)]))
 
-        wdN, wdD, wdM = max(np.abs(wdN)), max(np.abs(wdD)), max(np.abs(wdM))
-        b1N, b1D, b1M = max(np.abs(b1N)), max(np.abs(b1D)), max(np.abs(b1M))
-        b2N, b2D, b2M = max(np.abs(b2N)), max(np.abs(b2D)), max(np.abs(b2M))
+        wdN, wdD, wdM = np.max(np.abs(wdN)), np.max(np.abs(wdD)), np.max(np.abs(wdM))
+        b1N, b1D, b1M = np.max(np.abs(b1N)), np.max(np.abs(b1D)), np.max(np.abs(b1M))
+        b2N, b2D, b2M = np.max(np.abs(b2N)), np.max(np.abs(b2D)), np.max(np.abs(b2M))
+        I_max = np.max(np.array([*I1a, *I1b, *I2a, *I2b]))
 
-        return wdD*1 + b1N*2 + b2N*2
+        touw_max = np.max(np.array([*FiA, *FiB, *FiC, *FiD]))
+        touw_max = touw_max if touw_max < 460 else touw_max*10**9 # punish for impossible constructions
+
+        max_doorbuiging = np.max(doorbuiging)
+        max_doorbuiging = max_doorbuiging if max_doorbuiging < 0.02 else max_doorbuiging*10**9 # punish for impossible construction
+
+        return max_doorbuiging*1 + I_max*2 + touw_max*1
