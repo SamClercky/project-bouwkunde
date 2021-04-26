@@ -1,7 +1,7 @@
 #!/bin/bash
 
 shopt -s expand_aliases
-alias LOG="tee -a bruggen.txt"
+alias LOG="tee -a bruggen2.txt"
 
 echo "=========================" | LOG
 echo "=== START BRUG SECTIE ===" | LOG
