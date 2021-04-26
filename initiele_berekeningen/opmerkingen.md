@@ -11,3 +11,7 @@
 * Hoogte van pilonen moet ook besrtaft worden
 * Doobuiging moet meer worden bestraft want hoe dichter bij 0, hoe minder
 uitwijking mogelijk is.
+
+## 3de afk ronde
+* Assymmetriefactor in hoogte is te groot
+* De rest ziet er ok uit

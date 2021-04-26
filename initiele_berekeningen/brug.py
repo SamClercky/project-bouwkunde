@@ -103,6 +103,6 @@ class BrugInterface:
         max_doorbuiging = np.max(doorbuiging)
         max_doorbuiging = max_doorbuiging if max_doorbuiging < 0.02 else max_doorbuiging*10**9 # punish for impossible construction
 
-        h = self.h1 + self.h2*1.5  # We willen assymmetrie
+        h = self.h1 + self.h2*1.3  # We willen assymmetrie
 
-        return max_doorbuiging*10 + h + I_max*2 + touw_max*1 + self.N*100
+        return (max_doorbuiging*10)**2 + (h*20)**2 + I_max*1000 + touw_max*0.1 + self.N*100
