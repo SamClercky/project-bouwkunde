@@ -22,7 +22,7 @@ reI1b = re.compile(r'\tI1b: (\d+\.?\d+..\d+)')
 reI2a = re.compile(r'\tI2a: (\d+\.?\d+..\d+)')
 reI2b = re.compile(r'\tI2b: (\d+\.?\d+..\d+)')
 
-reScore = re.compile(r'\nScore brug: (\d+\.?\d+)')
+reScore = re.compile(r'\nScore brug: (\d+\.?\d+e?.\d?\d?)')
 
 
 def read_from_file(file: str):
@@ -145,7 +145,7 @@ def create_rapport(bruggen: List[str]):
     score = np.array([get_score(brug) for brug in bruggen])
 
     plt.figure()
-    plt.hist(score[score!=None], density=True)
+    plt.plot(score[score!=None])
     plt.title("Verschillende scores van bruggen")
     plt.xlabel("Score")
     plt.ylabel("Frequentie (%)")

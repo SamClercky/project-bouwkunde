@@ -92,13 +92,13 @@ class BrugInterface:
         I_max = np.max(np.array([*I1a, *I1b, *I2a, *I2b]))
 
         touw_max = np.max(np.array([*FiA, *FiB, *FiC, *FiD]))
-        touw_max = touw_max if touw_max < 460 else touw_max*10**9  # punish for impossible constructions
+        touw_max = touw_max if touw_max < 460 else touw_max**10  # punish for impossible constructions
 
         max_doorbuiging = np.max(doorbuiging)
         max_doorbuiging = max_doorbuiging if max_doorbuiging < 0.02 \
-            else max_doorbuiging*10**9  # punish for impossible construction
+            else max_doorbuiging*10**20  # punish for impossible construction
 
         h = self.h1 + self.h2*1.3  # We willen assymmetrie
 
-        return (max_doorbuiging*10)**2 + (h*10)**4 + I_max*1000 + \
+        return max_doorbuiging*1000 + h**3 + I_max*100 + \
             touw_max*0.1 + self.N*100

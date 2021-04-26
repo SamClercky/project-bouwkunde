@@ -1,10 +1,10 @@
 import numpy as np
 
 # Maxwaarden
-h1_max = 0.60 # 60cm
-h2_max = 0.60 # 60cm
-h1_min = 0.20 # 20cm
-h2_min = 0.20 # 20cm
+h1_max = 0.70 # 60cm
+h2_max = 0.70 # 60cm
+h1_min = 0.10 # 20cm
+h2_min = 0.10 # 20cm
 
 d1_max = 2 # 2m
 d2_max = 2 # 2m
@@ -21,7 +21,7 @@ d2b_max = 2 # 2m
 d1b_min = 0.1 # 10cm
 d2b_min = 0.1 # 10cm
 
-N_max = 10
+N_max = 20
 N_min = 1
 
 def find_best(population):
