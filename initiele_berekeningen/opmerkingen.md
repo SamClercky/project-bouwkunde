@@ -15,3 +15,7 @@ uitwijking mogelijk is.
 ## 3de afk ronde
 * Assymmetriefactor in hoogte is te groot
 * De rest ziet er ok uit
+
+## 4de afk ronde
+* Hoogtes lijken nog te hoog -> nieuwe maxima nodig
+* Doorbuiging moet bekeken worden

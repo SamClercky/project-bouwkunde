@@ -1,10 +1,10 @@
 import numpy as np
 
 # Maxwaarden
-h1_max = 2 # 2m
-h2_max = 2 # 2m
-h1_min = 0.06 # 6cm
-h2_min = 0.06 # 6cm
+h1_max = 0.60 # 60cm
+h2_max = 0.60 # 60cm
+h1_min = 0.20 # 20cm
+h2_min = 0.20 # 20cm
 
 d1_max = 2 # 2m
 d2_max = 2 # 2m

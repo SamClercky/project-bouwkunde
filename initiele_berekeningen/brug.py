@@ -85,24 +85,20 @@ class BrugInterface:
         self.calc_reactie_krachten()
         FiA, FiB = self.calc_touw_kracht()
         Vc, Hc, FiC, Vd, Hd, FiD = self.calc_kant()
-        wdN, wdD, wdM = list(zip(*[self.calc_intern_wegdek(x) for x in np.arange(0, 2, 0.1)])) # wd = wegdek
-        b1N, b1D, b1M = list(zip(*[self.calc_intern_balk(x, True) for x in np.arange(0, self.h1, 0.01)]))
-        b2N, b2D, b2M = list(zip(*[self.calc_intern_balk(x, False) for x in np.arange(0, self.h2, 0.01)]))
+
         doorbuiging = [self.calc_doorbuiging_wegdek(x) for x in np.arange(0, 2.0, 0.01)]
         I1a, I1b = list(zip(*[self.calc_piloon_I(x, True) for x in np.arange(0, self.h1, 0.01)]))
         I2a, I2b = list(zip(*[self.calc_piloon_I(x, False) for x in np.arange(0, self.h2, 0.01)]))
-
-        wdN, wdD, wdM = np.max(np.abs(wdN)), np.max(np.abs(wdD)), np.max(np.abs(wdM))
-        b1N, b1D, b1M = np.max(np.abs(b1N)), np.max(np.abs(b1D)), np.max(np.abs(b1M))
-        b2N, b2D, b2M = np.max(np.abs(b2N)), np.max(np.abs(b2D)), np.max(np.abs(b2M))
         I_max = np.max(np.array([*I1a, *I1b, *I2a, *I2b]))
 
         touw_max = np.max(np.array([*FiA, *FiB, *FiC, *FiD]))
-        touw_max = touw_max if touw_max < 460 else touw_max*10**9 # punish for impossible constructions
+        touw_max = touw_max if touw_max < 460 else touw_max*10**9  # punish for impossible constructions
 
         max_doorbuiging = np.max(doorbuiging)
-        max_doorbuiging = max_doorbuiging if max_doorbuiging < 0.02 else max_doorbuiging*10**9 # punish for impossible construction
+        max_doorbuiging = max_doorbuiging if max_doorbuiging < 0.02 \
+            else max_doorbuiging*10**9  # punish for impossible construction
 
         h = self.h1 + self.h2*1.3  # We willen assymmetrie
 
-        return (max_doorbuiging*10)**2 + (h*20)**2 + I_max*1000 + touw_max*0.1 + self.N*100
+        return (max_doorbuiging*10)**2 + (h*10)**4 + I_max*1000 + \
+            touw_max*0.1 + self.N*100
