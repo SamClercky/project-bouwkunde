@@ -6,20 +6,20 @@ h2_max = 0.70 # 60cm
 h1_min = 0.10 # 20cm
 h2_min = 0.10 # 20cm
 
-d1_max = 2 # 2m
-d2_max = 2 # 2m
+d1_max = 1 # 2m
+d2_max = 1 # 2m
 d1_min = 0.1 # 10cm
 d2_min = 0.1 # 10cm
 
-d1a_max = 2 # 2m
-d2a_max = 2 # 2m
-d1a_min = 0.1 # 10cm
-d2a_min = 0.1 # 10cm
+d1a_max = 1 # 2m
+d2a_max = 1 # 2m
+d1a_min = 0.05 # 10cm
+d2a_min = 0.05 # 10cm
 
 d1b_max = 2 # 2m
 d2b_max = 2 # 2m
-d1b_min = 0.1 # 10cm
-d2b_min = 0.1 # 10cm
+d1b_min = 0.05 # 10cm
+d2b_min = 0.05 # 10cm
 
 N_max = 20
 N_min = 1
@@ -107,7 +107,8 @@ def clamp(x, mini, maxi):
 def _genRandomBrugVars():
     from random import random, randint
     h1 = h1_min + random()*(h1_max - h1_min)
-    h2 = h2_min + random()*(h2_max - h2_min)
+    #h2 = h2_min + random()*(h2_max - h2_min)
+    h2 = h1/2
     d1a = d1a_min + random()*(d1a_max - d1a_min)
     d2a = d2a_min + random()*(d2a_max - d2a_min)
     d1b = d1b_min + random()*(d1b_max - d1b_min)
@@ -129,7 +130,8 @@ def genRandomBrugB():
 def _genParentVars(p1, p2):
     import random
     h1  = clamp((p1.h1 if random.choice([True, False]) else p2.h1) + random.gauss(0,1), h1_min, h1_max)
-    h2  = clamp((p1.h2 if random.choice([True, False]) else p2.h2) + random.gauss(0,1), h2_min, h2_max)
+    #h2  = clamp((p1.h2 if random.choice([True, False]) else p2.h2) + random.gauss(0,1), h2_min, h2_max)
+    h2 = h1/2
     d1a = clamp((p1.d1a if random.choice([True, False]) else p2.d1a) + random.gauss(0,1), d1a_min, d1a_max)
     d2a = clamp((p1.d2a if random.choice([True, False]) else p2.d2a) + random.gauss(0,1), d2a_min, d2a_max)
     d1b = clamp((p1.d1b if random.choice([True, False]) else p2.d1b) + random.gauss(0,1), d1b_min, d1b_max)

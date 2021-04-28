@@ -52,7 +52,8 @@ class BrugInterface:
         @returns I1, I2
         """
         N, _, _ = self.calc_intern_balk(x, balk1)
-        Cte = 1/4
+        Cte1 = 1
+        Cte2 = 1/4
         E = C.E_MODULUS
         h = self.h1 if balk1 else self.h2
         deeltje = h/self.N
@@ -60,8 +61,8 @@ class BrugInterface:
         L1 = deeltje
         L2 = deeltje*(x//deeltje + 1) # Hoogte van deel
 
-        I1 = abs(N)*L1**2/(Cte*math.pi**2*E)
-        I2 = abs(N)*L2**2/(Cte*math.pi**2*E)
+        I1 = abs(N)*L1**2/((Cte1 if L2!=L1 else 2)*math.pi**2*E)
+        I2 = abs(N)*L2**2/(Cte2*math.pi**2*E)
 
         return I1, I2
     
@@ -71,8 +72,8 @@ class BrugInterface:
         """
         I1, I2 = self.calc_piloon_I(x, balk1)
 
-        b = (I2**3/I1 * 11**2)**(1/8)
-        h = (I1**3/I1 * 12**2)**(1/8)
+        b = (I2**3/I1 * 12**2)**(1/8)
+        h = (I1**3/I2 * 12**2)**(1/8)
 
         return h, b
 
@@ -92,13 +93,13 @@ class BrugInterface:
         I_max = np.max(np.array([*I1a, *I1b, *I2a, *I2b]))
 
         touw_max = np.max(np.array([*FiA, *FiB, *FiC, *FiD]))
-        touw_max = touw_max if touw_max < 460 else touw_max**10  # punish for impossible constructions
+        touw_max = touw_max if touw_max < 600 else touw_max**10  # punish for impossible constructions
 
         max_doorbuiging = np.max(doorbuiging)
         max_doorbuiging = max_doorbuiging if max_doorbuiging < 0.02 \
             else max_doorbuiging*10**20  # punish for impossible construction
 
-        h = self.h1 + self.h2*1.3  # We willen assymmetrie
+        h = self.h1 + self.h2  # We willen assymmetrie
 
-        return max_doorbuiging*1000 + h**3 + I_max*100 + \
-            touw_max*0.1 + self.N*100
+        return max_doorbuiging*10**5 + h**6 + I_max*100 + \
+            touw_max*0.1 + self.N*10000

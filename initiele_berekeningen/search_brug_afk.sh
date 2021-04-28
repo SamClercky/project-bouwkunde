@@ -1,7 +1,7 @@
 #!/bin/bash
 
 shopt -s expand_aliases
-alias LOG="tee -a bruggen5.txt"
+alias LOG="tee -a bruggen7.txt"
 
 echo "=========================" | LOG
 echo "=== START BRUG SECTIE ===" | LOG
@@ -11,7 +11,7 @@ while :
 do
 	echo "[*] Start brug berekenen" | LOG
 	date | LOG
-	python ./search_brug.py | LOG
+	python3 ./search_brug.py | LOG
 	echo "\n" | LOG
 	echo "[*] End brug berekenen" | LOG
 done
