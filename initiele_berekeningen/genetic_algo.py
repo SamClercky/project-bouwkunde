@@ -8,21 +8,21 @@ h2_min = 0.10 # 20cm
 
 d1_max = 1 # 2m
 d2_max = 1 # 2m
-d1_min = 0.1 # 10cm
-d2_min = 0.1 # 10cm
+d1_min = 0.05 # 5cm
+d2_min = 0.05 # 5cm
 
 d1a_max = 1 # 2m
 d2a_max = 1 # 2m
-d1a_min = 0.05 # 10cm
-d2a_min = 0.05 # 10cm
+d1a_min = 0.05 # 5cm
+d2a_min = 0.05 # 5cm
 
 d1b_max = 2 # 2m
 d2b_max = 2 # 2m
-d1b_min = 0.05 # 10cm
-d2b_min = 0.05 # 10cm
+d1b_min = 0.05 # 5cm
+d2b_min = 0.05 # 5cm
 
-N_max = 20
-N_min = 1
+N_max = 6
+N_min = 6
 
 def find_best(population):
     scores = [[brug.calc_fitness(), brug] for brug in population]
@@ -127,6 +127,24 @@ def genRandomBrugB():
 
     return Brug(*_genRandomBrugVars())
 
+
+def genRandomBrugVlot():
+    from berekeningen_1piloon import Brug
+    from random import random, randint
+
+    h = h1_min + random()*(h1_max - h1_min)
+    da = d1a_min + random()*(d1a_max - d1a_min)
+    db = d1b_min + random()*(d1b_max - d1b_min)
+    N = randint(N_min, N_max)
+
+    return Brug(
+        h,
+        max(da, db+0.1),
+        db,
+        np.random.uniform(0, 2, N),
+    )
+
+
 def _genParentVars(p1, p2):
     import random
     h1  = clamp((p1.h1 if random.choice([True, False]) else p2.h1) + random.gauss(0,1), h1_min, h1_max)
@@ -145,8 +163,28 @@ def genFromParentsA(p1, p2):
 
     return Brug(*_genParentVars(p1, p2))
 
+
 def genFromParentsB(p1, p2):
     from berekeningen_ramses import Brug
 
     return Brug(*_genParentVars(p1, p2))
-    
+
+
+def genFromParentsVlot(p1, p2):
+    from berekeningen_1piloon import Brug
+    import random
+
+    h  = clamp((p1.h if random.choice([True, False]) else p2.h) + random.gauss(0,1), h1_min, h1_max)
+    da = clamp((p1.da if random.choice([True, False]) else p2.da) + random.gauss(0,1), d1a_min, d1a_max)
+    db = clamp((p1.db if random.choice([True, False]) else p2.db) + random.gauss(0,1), d1b_min, d1b_max)
+    N = [*p1.N, *p2.N]
+    np.random.shuffle(N)
+    N = np.clip(N + np.random.normal(size=len(N)), N_min, N_max)
+    N = np.sort(N[:int((len(p1.N)+len(p2.N))//2)])
+
+    return Brug(
+        h,
+        max(da, db+0.1),
+        db,
+        N,
+    )

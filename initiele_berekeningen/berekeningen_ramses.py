@@ -4,8 +4,9 @@ import numpy as np
 from brug import BrugInterface
 import constanten as C
 
+
 class Brug(BrugInterface):
-    
+
     def __init__(self, h1, h2, d1a, d2a, d1b, d2b, N):
         self.h1 = h1
         self.h2 = h2
@@ -16,7 +17,7 @@ class Brug(BrugInterface):
         self.N = N
 
         self.update_data()
-    
+
     def update_data(self):
         """
         Bereken automatisch alpha en beta in de constructie
@@ -56,7 +57,7 @@ class Brug(BrugInterface):
     def calc_touw_kracht(self):
         singam = math.sqrt(1-self.sina**2)
         sinphi = math.sqrt(1-self.sinb**2)
-        sinab  = self.sina*self.cosb + self.cosa*self.sinb
+        sinab = self.sina*self.cosb + self.cosa*self.sinb
 
         self.FiA = [self.Vi[i] * sinphi/sinab for i in range(1, len(self.Vi)-1)]
         self.FiB = [self.Vi[i] * singam/sinab for i in range(1, len(self.Vi)-1)]
@@ -124,3 +125,4 @@ class Brug(BrugInterface):
         M = np.sum(FiA[:i]*cosa - FiC[:i]*cosgam[:i])*sum(x-h/self.N*ii for ii in range(i))
 
         return N, D, M
+
