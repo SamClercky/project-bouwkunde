@@ -21,8 +21,8 @@ d2b_max = 2 # 2m
 d1b_min = 0.05 # 5cm
 d2b_min = 0.05 # 5cm
 
-N_max = 6
-N_min = 6
+N_max = 10
+N_min = 4
 
 def find_best(population):
     scores = [[brug.calc_fitness(), brug] for brug in population]
@@ -141,7 +141,7 @@ def genRandomBrugVlot():
         h,
         max(da, db+0.1),
         db,
-        np.random.uniform(0, 2, N),
+        np.sort(np.random.uniform(0, 2, N)),
     )
 
 

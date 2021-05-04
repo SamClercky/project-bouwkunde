@@ -8,8 +8,8 @@ import genetic_algo as ga
 from berekeningen_1piloon import print_brug
 
 # Creeer van populatie
-population = [ga.genRandomBrugVlot() for i in range(500)] # Populatie van 100
-for i in range(400): # 1000 generations
+population = [ga.genRandomBrugVlot() for i in range(400)] # Populatie van 100
+for i in range(1000): # 1000 generations
     print('.', end="")
     population = ga.kill_population(population)
     population = ga.regen_population(population,
